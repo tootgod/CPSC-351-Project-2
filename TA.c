@@ -60,7 +60,8 @@ int main(int argc, char* argv[])
 	{
 		if (sem_init(&ChairsSemaphores[i], 0, 0) != 0)
 		{
-			perror("Failed to initialize Chair Semaphore number" + i);
+			printf("Failed to initialize Chair Semaphore number %d\n", i);
+			perror("Failed to initialize Chair Semaphore");
 			exit(EXIT_FAILURE);
 		}
 	}
