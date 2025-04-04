@@ -12,7 +12,7 @@ pthread_t TA;				//Separate Thread for TA.
 int ChairsCount = 0;
 int CurrentIndex = 0;
 
-/*TODO
+/*Should be complete now, please check the code below and make sure it is correct.
  
 //Declaration of Semaphores and Mutex Lock.
 //Semaphores used:
@@ -27,7 +27,11 @@ int CurrentIndex = 0;
  
  
  */
+sem_t TASemaphore;
+sem_t ChairsSemaphores[3];
+sem_t NextStudentSemaphore;
 
+pthread_mutex_t ChairsCountMutex;
 
 
 //Declared Functions
@@ -40,13 +44,38 @@ int main(int argc, char* argv[])
 	int id;
 	srand(time(NULL));
 
-    /*TODO
+    /*Please check code below and make sure it is correct.
 	//Initializing Mutex Lock and Semaphores.
 	
      //hint: use sem_init() and pthread_mutex_init()
      
      */
 	
+	if (sem_init(&TASemaphore, 0, 0) != 0)
+	{
+		perror("Failed to initialize TA Semaphore");
+		exit(EXIT_FAILURE);
+	}
+	for(int i=0; i<3; i++)
+	{
+		if (sem_init(&ChairsSemaphores[i], 0, 0) != 0)
+		{
+			perror("Failed to initialize Chair Semaphore number" + i);
+			exit(EXIT_FAILURE);
+		}
+	}
+	if (sem_init(&NextStudentSemaphore, 0, 0) != 0)
+	{
+		perror("Failed to initialize Next Student Semaphore");
+		exit(EXIT_FAILURE);
+	}
+
+	if (pthread_mutex_init(&ChairsCountMutex, NULL) != 0)
+	{
+		perror("Failed to initialize Mutex Lock");
+		exit(EXIT_FAILURE);
+	}
+
 	if(argc<2)
 	{
 		printf("Number of Students not specified. Using default (5) students.\n");
@@ -69,6 +98,8 @@ int main(int argc, char* argv[])
      //hint: use pthread_join
      
      */
+	
+	
 
 	//Free allocated memory
 	free(Students); 
@@ -77,10 +108,10 @@ int main(int argc, char* argv[])
 
 void *TA_Activity()
 {
-    /* TODO
+    /* I think this is done, The ta might not be "sleeping" properly though, so please double check this.
 	//TA is currently sleeping.
 
-    // lock
+    // lock chairs count mutex
     
     //if chairs are empty, break the loop.
 
@@ -93,6 +124,25 @@ void *TA_Activity()
      //hint: use sem_wait(); sem_post(); pthread_mutex_lock(); pthread_mutex_unlock()
 
 */
+	while (1)
+	{
+		sem_wait(&TASemaphore);
+		pthread_mutex_lock(&ChairsCountMutex);
+		if (ChairsCount == 0)
+		{
+			pthread_mutex_unlock(&ChairsCountMutex);
+			continue;
+		}
+		ChairsCount--;
+		pthread_mutex_unlock(&ChairsCountMutex);
+		sem_post(&NextStudentSemaphore);
+		printf("TA is helping a student.\n");
+		sleep(1); // Simulate time taken to help the student
+		printf("TA finished helping a student.\n");
+	}
+	
+	
+
 }
 
 void *Student_Activity(void *threadID) 
