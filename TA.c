@@ -194,4 +194,35 @@ void *Student_Activity(void *threadID)
      //hint: use sem_wait(); sem_post(); pthread_mutex_lock(); pthread_mutex_unlock()
 			
 	*/
+
+	long id = (long)threadID;
+    while(1) {
+        // random delay simulating arrival
+        sleep(rand() % 5);
+
+        // attempt to sit in a chair
+        pthread_mutex_lock(&ChairsCountMutex);
+        if (ChairsCount < 3) {
+            ChairsCount++;
+            printf("Student %ld sat on a chair. Chairs in use: %d\n", id, ChairsCount);
+            pthread_mutex_unlock(&ChairsCountMutex);
+
+            // wake up the TA
+            sem_post(&TASemaphore);
+
+            // wait for your turn to be helped
+            sem_wait(&NextStudentSemaphore);
+
+            // student is now being helped
+            printf("Student %ld is getting help from the TA.\n", id);
+            // simulate the student finishing help
+            printf("Student %ld left the TA room.\n", id);
+            break; // done
+        } else {
+            // no chairs left
+            printf("Student %ld found no empty chair, will try again later.\n", id);
+            pthread_mutex_unlock(&ChairsCountMutex);
+        }
+    }
+    return NULL;
 }
