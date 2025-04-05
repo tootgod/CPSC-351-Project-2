@@ -100,6 +100,33 @@ int main(int argc, char* argv[])
      
      */
 	
+	// create TA thread 
+	if (pthread_create(&TA, NULL, TA_Activity, NULL) != 0) {
+		perror("Failed to create TA thread");
+		exit(EXIT_FAILURE);
+	}
+
+	// create student threads
+	for (int i = 0; i < number_of_students; i++) {
+		if (pthread_create(&Students[i], NULL, Student_Activity, (void*)(long)i) !=0) {
+			perror("Failed to create Student thread");
+            exit(EXIT_FAILURE);
+		} 
+	}
+
+	// join TA thread
+	if (pthread_join(TA, NULL) !=0) {
+		perror("Failed to join TA thread");
+		exit(EXIT_FAILURE);
+	}
+
+	// join student threads
+	for (int i = 0; i < number_of_students; i++) {
+		if (pthread_join(Students[i], NULL) != 0) {
+			perror("Failed to join Student thread");
+            exit(EXIT_FAILURE);
+		}
+	}
 	
 
 	//Free allocated memory
