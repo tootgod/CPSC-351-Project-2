@@ -154,12 +154,16 @@ void *TA_Activity()
 */
 	while (1)
 	{
+		printf("TA is sleeping.\n");
 		sem_wait(&TASemaphore);
+		printf("TA is awake.\n");
+		while(ChairsCount>0)
+		{
 		pthread_mutex_lock(&ChairsCountMutex);
 		if (ChairsCount == 0)
 		{
 			pthread_mutex_unlock(&ChairsCountMutex);
-			continue;
+			break;
 		}
 		ChairsCount--;
 		pthread_mutex_unlock(&ChairsCountMutex);
@@ -167,6 +171,7 @@ void *TA_Activity()
 		printf("TA is helping a student.\n");
 		sleep(1); // Simulate time taken to help the student
 		printf("TA finished helping a student.\n");
+		}
 	}
 	
 	
