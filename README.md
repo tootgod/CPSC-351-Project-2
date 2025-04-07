@@ -2,8 +2,10 @@
 
 ## Section Information
 - Section: 09 (14061)
-- Name: , Kenny Garcia
-- Email: , kennygarcia15@csu.fullerton.edu
+- Name: Kenny Garcia , Kyler Geesink
+- Email: kennygarcia15@csu.fullerton.edu, geesinkk@csu.fullerton.edu
+
+- Contributions: Kenny wrote the student function, Kyler wrote the ta function, and we both wrote the main driver function
 
 ## Programming Language
 This project was developed in **C**
