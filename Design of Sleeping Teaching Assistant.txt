@@ -1,0 +1,39 @@
+﻿Design of Sleeping Teaching Assistant
+
+1. Introduction The Sleeping Teaching Assistant (TA) simulation utilizes threads, mutexes, and semaphores 
+to illustrate a concurrency problem. It is an example of process synchronization simulating some students asking 
+for help from a TA during office hours. It provides the ability to interact within a shared resource (the TA) 
+while managing the logic for wait with the chairs being limited.
+
+2. Software Design Levels Architectural Design: The system will be broken down into three major components: 
+TA Thread: The TA will be either helping a student, or sleeping in the event there are no students present. 
+Student Threads: A number of students will arrive randomly to ask for help from the TA. Shared Resources: 
+Chair (a bounded buffer), semaphores and mutexes will manage access. High-Level Design: TA will check for a 
+student waiting. If no students are waiting for help the TA will go to sleep. A Student arrives or wakes the TA up, 
+If the TA is sleeping a student wakes up the TA. If the TA is helping a student and there are waiting chairs available a 
+student can wait.If there are no waiting chairs available then the student leaves and tries again later. 
+Detail Design: Shared Variables: waitingStudents: Counts how many students are in waiting chairs. mutex: 
+Protects shared state.sem_students: semaphore counts how many students are waiting for help (value depends on 
+one number of chairs). sem_ta: semaphore used by TA to tell students he/she is ready to help.
+
+3. Modularization Each module (TA and students) is expressed using separate threads. TA_Activity(): 
+Repeats forever waiting for students. Only ever helps one student at a time.*Student_Activity(void id)**: 
+Each student checks if a TA can help them, and if not, either waits, or leaves.The Mutex guarantees that only 
+1 thread accesses critical areas dealing with chair availability. Semaphores manage both the wake-up and signaling.
+
+4. ConcurrencyUtilizes pthread for the TA and student threads.Semaphores manage access to the shared state. 
+Mutex locks exist to prevent race conditions while updating the number of students in the waiting state. 
+The TA thread and student threads are executing concurrently communicating the fact that synchronization is a 
+key design consideration.
+
+5. Coupling and CohesionHigh cohesion: modules TA, Student are responsible for managing their own respective 
+behavior. Low coupling: shared state is ultimately encapsulated behind Mutex/Semaphore. Data coupling: 
+threads communicate solely through shared data with managed access.
+
+6. Design VerificationThe system was verified through manual inspections and walks through the code. 
+All Semaphore and Mutex locks were initialized and checked for errors. Logic was checked that TAs only 
+helped one student at a time and would not skip students.
+
+7.  Overall, this design assures that the structured use of synchronization primitives to simulate a classic 
+concurrency problem. Its modular and concurrency nature allows students and TA to interact in a realistic way 
+and properly manage shared resources.
